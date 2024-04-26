@@ -39,7 +39,7 @@ DATABASE_COLLECTION: str = "log"  # Name of the collection for logging
 ACCESS_TOKEN: str = "ACCESS_TOKEN"
 
 # Configuration for FastAPI (WebAPI) port
-FAST_API_PORT = 8088  # Change this port number if necessary
+PORT = 8088  # Change this port number if necessary
 
 LOGGING_CONFIG: dict = {
     'version': 1,
