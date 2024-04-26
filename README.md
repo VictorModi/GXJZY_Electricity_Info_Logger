@@ -1,12 +1,12 @@
 # GXJZY Electricity Info Logger
 
 ## Description
-GXJZY Electricity Info Logger is a Python script project designed to help users retrieve and store electricity information from the website of Guangxi Transport Vocational and Technical College (or GXJZY) into MongoDB. This enables users to monitor changes in electricity data conveniently.
+GXJZY Electricity Info Logger is a Python script project designed to help users retrieve and store electricity information from the website of Guangxi Transport Vocational and Technical College (or GXJZY) into MySQL. This enables users to monitor changes in electricity data conveniently.
 
 ## Features
 - **Website Information Retrieval:** Implements functionality to fetch electricity information from the GXJZY website using Python scripts, ensuring users can access the latest electricity data.
   
-- **Storage in MongoDB:** Electricity information is stored in a MongoDB database, allowing users easy access to historical electricity data for analysis and comparison.
+- **Storage in MySQL:** Electricity information is stored in a MySQL database, allowing users easy access to historical electricity data for analysis and comparison.
 
 - **View Historical Electricity Information:** Provides functionality to view historical electricity information via Web API, enabling users to review past electricity data records easily.
 
@@ -16,8 +16,8 @@ GXJZY Electricity Info Logger is a Python script project designed to help users 
 
 ## Usage
 1. Install Python environment and ensure relevant dependencies are installed.
-2. Fill in the appropriate website login information and MongoDB connection information in the configuration file.
-3. Run the script to begin retrieving electricity information and storing it in the MongoDB database.
+2. Fill in the appropriate website login information and MySQL connection information in the configuration file.
+3. Run the script to begin retrieving electricity information and storing it in the MySQL database.
 
 ## Installation
 Clone the repository:
@@ -34,7 +34,7 @@ pip install -r requirements.txt
 
 Configuration:
 
-Edit the `config-template.py` file and provide your website login credentials and MongoDB connection details. After configuration, rename the file to `config.py`.
+Edit the `config-template.py` file and provide your website login credentials and MySQL connection details. After configuration, rename the file to `config.py`.
 
 ## License
 

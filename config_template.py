@@ -25,13 +25,20 @@ PASSWORD: str = '******'
 # The specific value depends on the response returned by the school's website.
 CUST_ID: str = "****"
 
-# Whether to log dormitory address ID information
-LOGGING_ADDR = False
-
-# MongoDB configuration
-DATABASE_URL: str = "mongodb://localhost:27017"  # MongoDB connection URL
-DATABASE_NAME: str = "electricity"  # Name of the database
-DATABASE_COLLECTION: str = "log"  # Name of the collection for logging
+# MySQL server address
+MYSQL_HOST: str = "127.0.0.1"
+# MySQL server port
+MYSQL_PORT: int = 3306
+# MySQL username
+MYSQL_USER: str = "root"
+# MySQL password
+MYSQL_PASSWORD: str = ""
+# MySQL database name
+MYSQL_DATABASE: str = "electricity"
+# MySQL table name
+MYSQL_TABLE_NAME: str = "log"
+# MySQL's character set
+MYSQL_CHARSET: str = "utf8mb4"
 
 # Access token for authentication (optional, API is unauthenticated if not provided)
 # WARNING: It's not recommended to leave ACCESS_TOKEN unset for production environments.
@@ -39,7 +46,7 @@ DATABASE_COLLECTION: str = "log"  # Name of the collection for logging
 ACCESS_TOKEN: str = "ACCESS_TOKEN"
 
 # Configuration for FastAPI (WebAPI) port
-FAST_API_PORT = 8088  # Change this port number if necessary
+PORT = 8088  # Change this port number if necessary
 
 LOGGING_CONFIG: dict = {
     'version': 1,

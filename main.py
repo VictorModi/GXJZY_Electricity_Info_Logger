@@ -9,6 +9,7 @@ import uvicorn
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
+from sqlalchemy.dialects.mysql import aiomysql
 from starlette.responses import JSONResponse, StreamingResponse
 
 from electricity import *
@@ -121,18 +122,18 @@ def scheduler_job():
     except LoginFailedException:
         logging.error(f"Failed to login to {BASE_URL}, this task is discarded.")
         return
-    #  logging.info(ei.to_dict())
-    if ei.insert2db() is not None:
-        logging.info(f"Data inserted successfully: {ei.to_dict()}")
+    logging.info(ei.to_dict())
+    if ei.insert2db():
+        logging.info("Data inserted successfully.")
     else:
-        logging.info(f"Same data exists in the database, skipping")
+        logging.info("Same data exists in the database, skipping")
 
 
 @app.get("/")
 # access_token: str = Depends(verify_token)
 async def root_endpoint() -> ResponseJson:
     try:
-        last_log = get_logs()[0]
+        last_log = get_logs(get_cursor())[0]
         return ResponseJson(200, "", last_log)
     except IndexError:
         return ResponseJson(404, "No logs found", {})
@@ -164,7 +165,7 @@ async def get_endpoint(access_token: str = Depends(verify_token), cust_id: int =
 @app.get("/logs", response_model=None)
 async def logs_endpoint(limit: int = 1, reverse: bool = True, file_type: LogType = LogType.JSON,
                         access_token: str = Depends(verify_token)) -> StreamingResponse | ResponseJson:
-    logs = get_logs(limit=limit, ascending_order=not reverse)
+    logs = get_logs(get_cursor(), limit=limit, ascending_order=not reverse)
     if file_type == LogType.CSV:
         csv_content = list_dict_to_csv(logs)
         filename = f"logs_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
@@ -206,6 +207,17 @@ async def get_cookie_endpoint(access_token: str = Depends(verify_token)) -> Resp
         return ResponseJson(200, "", {})
     except requests.exceptions.ConnectionError as err:
         return ResponseJson(500, f"Failed to connect to {BASE_URL}, this task is discarded.", vars(err))
+
+
+async def get_cursor():
+    return pymysql.connect(
+        host=MYSQL_HOST,
+        user=MYSQL_USER,
+        port=MYSQL_PORT,
+        password=MYSQL_PASSWORD,
+        database=MYSQL_DATABASE,
+        charset=MYSQL_CHARSET
+    ).cursor()
 
 
 def list_dict_to_csv(data: list) -> str:
