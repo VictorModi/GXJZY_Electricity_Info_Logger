@@ -1,10 +1,17 @@
 from pytz import timezone
+from datetime import timedelta
 
 # School site URL
 BASE_URL: str = 'http://cw.gxjzy.com:8081'
 
 # Timezone
 TIMEZONE: timezone = timezone('Asia/Shanghai')
+
+# Configuration for time interval
+# TIME_INTERVAL controls the interval for fetching electricity information from the website.
+# Setting the interval too short may cause excessive requests and strain on the website's servers.
+# It is recommended not to set the interval too short to avoid potential issues.
+TIME_INTERVAL = timedelta(minutes=10)  # Adjust this time interval as needed
 
 # Student ID or ID card number
 SID: str = '2023040****'
@@ -31,6 +38,8 @@ DATABASE_COLLECTION: str = "log"  # Name of the collection for logging
 # API access may be unauthenticated if ACCESS_TOKEN is not provided.
 ACCESS_TOKEN: str = "ACCESS_TOKEN"
 
+# Configuration for FastAPI (WebAPI) port
+FAST_API_PORT = 8088  # Change this port number if necessary
 
 LOGGING_CONFIG: dict = {
     'version': 1,

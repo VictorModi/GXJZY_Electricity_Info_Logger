@@ -110,7 +110,7 @@ def get_electricity(cust_id=None) -> ElectricityInfo | None:
 
 def scheduler_job():
     global login_session
-    next_run = datetime.now().replace(second=0, microsecond=0) + timedelta(minutes=10)
+    next_run = datetime.now().replace(second=0, microsecond=0) + TIME_INTERVAL
     logging.info("Next run will be at {}.".format(next_run.strftime("%Y-%m-%d %H:%M:%S")))
     scheduler.add_job(scheduler_job, 'date', run_date=next_run)
     try:
@@ -233,4 +233,4 @@ if __name__ == "__main__":
         exit(1)
     scheduler.add_job(scheduler_job)
     scheduler.start()
-    uvicorn.run(app, host="0.0.0.0", port=26233, log_config=LOGGING_CONFIG)
+    uvicorn.run(app, host="0.0.0.0", port=PORT, log_config=LOGGING_CONFIG)
