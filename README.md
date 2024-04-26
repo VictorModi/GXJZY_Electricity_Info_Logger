@@ -1,7 +1,7 @@
 # GXJZY Electricity Info Logger
 
 ## Description
-GXJZY Electricity Info Logger is a Python script project designed to help users retrieve and store electricity information from the website of Guangxi Transport Vocational Technical College (or GXJZY) into MongoDB. This enables users to monitor changes in electricity data conveniently.
+GXJZY Electricity Info Logger is a Python script project designed to help users retrieve and store electricity information from the website of Guangxi Transport Vocational and Technical College (or GXJZY) into MongoDB. This enables users to monitor changes in electricity data conveniently.
 
 ## Features
 - **Website Information Retrieval:** Implements functionality to fetch electricity information from the GXJZY website using Python scripts, ensuring users can access the latest electricity data.
