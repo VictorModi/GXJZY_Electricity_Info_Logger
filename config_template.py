@@ -1,11 +1,7 @@
-from pytz import timezone
 from datetime import timedelta
 
 # School site URL
 BASE_URL: str = 'http://cw.gxjzy.com:8081'
-
-# Timezone
-TIMEZONE: timezone = timezone('Asia/Shanghai')
 
 # Configuration for time interval
 # TIME_INTERVAL controls the interval for fetching electricity information from the website.

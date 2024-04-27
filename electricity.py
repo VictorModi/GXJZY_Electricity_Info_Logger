@@ -4,7 +4,6 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 
 import pymysql
-from pytz import utc
 
 from config import *
 
@@ -38,7 +37,7 @@ class ElectricityInfo(object):
             self.prev_used_amp: Decimal = Decimal(0)
             self.prev_res_amp: Decimal = Decimal(0)
             self.prev_ratio: Decimal = Decimal(0)
-            self.record_time: datetime = TIMEZONE.localize(datetime.strptime(data["data"]["Time"], '%Y/%m/%d %H:%M:%S'))
+            self.record_time: datetime = datetime.strptime(data["data"]["Time"], '%Y/%m/%d %H:%M:%S')
             self.raw_data: dict = data
             try:
                 last_log = get_logs(self.cursor)
@@ -94,24 +93,28 @@ class ElectricityInfo(object):
 
 def get_logs(cursor, limit=1, ascending_order=False):
     sort_order = "ASC" if ascending_order else "DESC"
+    keys = {
+        'used_amp',
+        'res_amp',
+        'difference',
+        'prev_used_amp',
+        'prev_res_amp',
+        'prev_ratio',
+        'record_time'
+    }
     cursor.execute(
-        "SELECT used_amp, res_amp, difference, prev_used_amp, prev_res_amp, prev_ratio, record_time "
+        "SELECT {} "
         "FROM {} ORDER BY id {} LIMIT %s".format(
-            MYSQL_TABLE_NAME, sort_order
+            ', '.join(keys), MYSQL_TABLE_NAME, sort_order
         ),
         (limit,)
     )
     logs = []
     for row in cursor.fetchall():
-        log = {
-            "used_amp": Decimal(row[0]),
-            "res_amp": Decimal(row[1]),
-            "difference": Decimal(row[2]),
-            "prev_used_amp": Decimal(row[3]),
-            "prev_res_amp": Decimal(row[4]),
-            "prev_ratio": Decimal(row[5]),
-            "time": utc.localize(row[6]).astimezone(TIMEZONE)
-        }
+        log = {}
+        for i, key in enumerate(keys):
+            value = row[i]
+            log[key] = value
         logs.append(log)
     return logs
 
