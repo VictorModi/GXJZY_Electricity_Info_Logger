@@ -151,7 +151,7 @@ async def get_endpoint(access_token: str = Depends(verify_token), cust_id: int =
         result["is_inserted"] = False
         return ResponseJson(200, "", result)
 
-    is_inserted = response.insert2db() is not None
+    is_inserted = response.insert2db()
     if is_inserted:
         logging.info(f"Data inserted successfully: {response.to_dict()}")
     else:
@@ -208,7 +208,7 @@ async def get_cookie_endpoint(access_token: str = Depends(verify_token)) -> Resp
         return ResponseJson(500, f"Failed to connect to {BASE_URL}, this task is discarded.", vars(err))
 
 
-async def get_cursor():
+def get_cursor():
     return pymysql.connect(
         host=MYSQL_HOST,
         user=MYSQL_USER,
