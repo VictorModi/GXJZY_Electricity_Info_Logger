@@ -41,7 +41,7 @@ class ElectricityInfo(object):
             self.record_time: datetime = TIMEZONE.localize(datetime.strptime(data["data"]["Time"], '%Y/%m/%d %H:%M:%S'))
             self.raw_data: dict = data
             try:
-                last_log = get_logs(self.cursor, 1)
+                last_log = get_logs(self.cursor)
                 if last_log:
                     self.prev_used_amp = self.used_amp - last_log[0]['used_amp']
                     self.prev_res_amp = self.res_amp - last_log[0]['res_amp']
@@ -63,7 +63,7 @@ class ElectricityInfo(object):
     def insert2db(self) -> bool:
         try:
             cursor = self.conn.cursor()
-            if len(get_logs(cursor)) == 0 or (self.prev_res_amp != Decimal(0) and self.prev_used_amp != Decimal(0)):
+            if not get_logs(cursor) or (self.prev_res_amp != Decimal(0) and self.prev_used_amp != Decimal(0)):
                 sql = (f"INSERT INTO {MYSQL_TABLE_NAME} (used_amp, res_amp, difference, "
                        f"prev_used_amp, prev_res_amp, prev_ratio, record_time) VALUES (%s, %s, %s, %s, %s, %s, %s)")
                 values = (
@@ -119,8 +119,8 @@ def get_logs(cursor, limit=1, ascending_order=False):
 def try_to_create_table(conn):
     cursor = conn.cursor()
     try:
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS log (
+        cursor.execute(f"""
+            CREATE TABLE IF NOT EXISTS {MYSQL_TABLE_NAME} (
                 id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
                 used_amp DECIMAL(12, 2) NOT NULL,
                 res_amp DECIMAL(12, 2) NOT NULL,
@@ -133,5 +133,5 @@ def try_to_create_table(conn):
         """)
         conn.commit()
     except Exception as e:
-        conn.rollback()  # 回滚事务
+        conn.rollback()
         logging.error(f"Failed to create table: {e}")
