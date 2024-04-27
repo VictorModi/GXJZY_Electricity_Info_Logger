@@ -28,13 +28,14 @@ class ElectricityInfo(object):
             self.time: datetime = TIMEZONE.localize(datetime.strptime(data["data"]["Time"], '%Y/%m/%d %H:%M:%S'))
             self.raw_data: dict = data
             try:
-                last_log = get_logs()[0]
-                self.prev_used_amp = self.used_amp - last_log['used_amp']
-                self.prev_res_amp = self.res_amp - last_log['res_amp']
-                if self.prev_used_amp != Decimal(0) or self.prev_used_amp != Decimal(0):
-                    self.prev_ratio = self.prev_used_amp / abs(self.prev_res_amp)
+                last_log = get_logs()
+                if last_log:
+                    self.prev_used_amp = self.used_amp - last_log[0]['used_amp']
+                    self.prev_res_amp = self.res_amp - last_log[0]['res_amp']
+                    if self.prev_used_amp != Decimal(0) and self.prev_res_amp != Decimal(0):
+                        self.prev_ratio = self.prev_used_amp / abs(self.prev_res_amp)
                 else:
-                    self.prev_ratio = Decimal(0)
+                    pass
             except IndexError as e:
                 logging.error(e)
                 pass
@@ -48,7 +49,7 @@ class ElectricityInfo(object):
 
     def insert2db(self):
         try:
-            if self.prev_res_amp != Decimal(0) and self.prev_used_amp != Decimal(0):
+            if get_logs() or (self.prev_res_amp != Decimal(0) and self.prev_used_amp != Decimal(0)):
                 return self.collection.insert_one(self.to_dict(True))
             return None
         except AttributeError:
