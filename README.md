@@ -23,7 +23,7 @@ GXJZY Electricity Info Logger is a Python script project designed to help users 
 Clone the repository:
 
 ```bash
-git clone https://github.com/VictorModi/GXJZY_Electricity_Info_Logger.git
+git clone -b mysql https://github.com/VictorModi/GXJZY_Electricity_Info_Logger.git
 ```
 
 Install dependencies:
