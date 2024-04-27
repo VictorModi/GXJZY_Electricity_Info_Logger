@@ -93,7 +93,7 @@ class ElectricityInfo(object):
 
 def get_logs(cursor, limit=1, ascending_order=False):
     sort_order = "ASC" if ascending_order else "DESC"
-    keys = {
+    keys = [
         'used_amp',
         'res_amp',
         'difference',
@@ -101,22 +101,24 @@ def get_logs(cursor, limit=1, ascending_order=False):
         'prev_res_amp',
         'prev_ratio',
         'record_time'
-    }
-    cursor.execute(
+    ]
+
+    query = (
         "SELECT {} "
-        "FROM {} ORDER BY id {} LIMIT %s".format(
-            ', '.join(keys), MYSQL_TABLE_NAME, sort_order
-        ),
-        (limit,)
-    )
-    logs = []
-    for row in cursor.fetchall():
-        log = {}
-        for i, key in enumerate(keys):
-            value = row[i]
-            log[key] = value
-        logs.append(log)
-    return logs
+        "FROM {} ORDER BY id {}"
+    ).format(', '.join(keys), MYSQL_TABLE_NAME, sort_order)
+
+    if limit >= 0:
+        # 如果limit大于等于0，添加LIMIT子句
+        query += " LIMIT %s"
+        cursor.execute(query, (limit,))
+    else:
+        cursor.execute(query)
+
+    return [
+        dict(zip(keys, row))
+        for row in cursor
+    ]
 
 
 def try_to_create_table(conn):

@@ -36,6 +36,8 @@ MYSQL_TABLE_NAME: str = "log"
 # MySQL's character set
 MYSQL_CHARSET: str = "utf8mb4"
 
+MAX_RETRIES: int = 3
+RETRY_DELAY: int = 5
 # Access token for authentication (optional, API is unauthenticated if not provided)
 # WARNING: It's not recommended to leave ACCESS_TOKEN unset for production environments.
 # API access may be unauthenticated if ACCESS_TOKEN is not provided.
