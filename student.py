@@ -143,6 +143,7 @@ class StudentRequest(object):
         try:
             self.send_get("home/logout", need_login=False)
             self.student_user = None
+            self.session.close()
             self.session = requests.Session()
             self.cookies = None
             return
