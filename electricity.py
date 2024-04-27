@@ -11,7 +11,6 @@ from config import *
 
 class ElectricityInfo(object):
     def __init__(self, data: dict):
-        self.cursor = None
         if not (data['success'] and data['state'] != 200):
             pass
         for _ in range(MAX_RETRIES):
@@ -31,7 +30,7 @@ class ElectricityInfo(object):
         else:
             logging.error("Failed to connect to database after multiple retries.")
         self.cursor = self.conn.cursor()
-        self.try_to_create_table()
+        try_to_create_table(self.conn)
         try:
             self.used_amp: Decimal = Decimal(data["data"]["Usedamp"])
             self.res_amp: Decimal = Decimal(data["data"]["Resamp"])
@@ -63,42 +62,23 @@ class ElectricityInfo(object):
 
     def insert2db(self) -> bool:
         try:
-            if self.prev_res_amp != Decimal(0) and self.prev_used_amp != Decimal(0):
+            cursor = self.conn.cursor()
+            if len(get_logs(cursor)) == 0 or (self.prev_res_amp != Decimal(0) and self.prev_used_amp != Decimal(0)):
                 sql = (f"INSERT INTO {MYSQL_TABLE_NAME} (used_amp, res_amp, difference, "
                        f"prev_used_amp, prev_res_amp, prev_ratio, record_time) VALUES (%s, %s, %s, %s, %s, %s, %s)")
                 values = (
                     self.used_amp, self.res_amp, self.difference, self.prev_used_amp, self.prev_res_amp,
-                    self.prev_ratio,
-                    self.record_time)
-                self.cursor.execute(sql, values)
+                    self.prev_ratio, self.record_time)
+                cursor.execute(sql, values)
                 self.conn.commit()
                 return True
         except Exception as e:
             logging.error(f"Failed to insert data into database: {e}")
         return False
 
-    def __del__(self):
+    def close(self):
         self.cursor.close()
         self.conn.close()
-
-    def try_to_create_table(self):
-        try:
-            self.cursor.execute("""
-                CREATE TABLE IF NOT EXISTS log (
-                    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-                    used_amp DECIMAL(16, 6) NOT NULL,
-                    res_amp DECIMAL(16, 6) NOT NULL,
-                    difference DECIMAL(16, 6) NOT NULL,
-                    prev_used_amp DECIMAL(16, 6) NOT NULL,
-                    prev_res_amp DECIMAL(16, 6) NOT NULL,
-                    prev_ratio DECIMAL(16, 6) NOT NULL,
-                    record_time DATETIME NOT NULL
-                )
-            """)
-            self.conn.commit()
-        except Exception as e:
-            self.conn.rollback()  # 回滚事务
-            logging.error(f"Failed to create table: {e}")
 
     def to_dict(self):
         return dict(
@@ -134,3 +114,24 @@ def get_logs(cursor, limit=1, ascending_order=False):
         }
         logs.append(log)
     return logs
+
+
+def try_to_create_table(conn):
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS log (
+                id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+                used_amp DECIMAL(12, 2) NOT NULL,
+                res_amp DECIMAL(12, 2) NOT NULL,
+                difference DECIMAL(12, 2) NOT NULL,
+                prev_used_amp DECIMAL(12, 2) NOT NULL,
+                prev_res_amp DECIMAL(12, 2) NOT NULL,
+                prev_ratio DECIMAL(18, 8) NOT NULL,
+                record_time DATETIME NOT NULL
+            )
+        """)
+        conn.commit()
+    except Exception as e:
+        conn.rollback()  # 回滚事务
+        logging.error(f"Failed to create table: {e}")

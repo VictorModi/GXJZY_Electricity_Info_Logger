@@ -1,7 +1,6 @@
 # # Ignore the IDE warning "Parameter 'request' value is not used". Do not modify!
 import csv
 import io
-from datetime import timedelta
 from enum import IntEnum
 from urllib.request import Request
 
@@ -9,7 +8,6 @@ import uvicorn
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy.dialects.mysql import aiomysql
 from starlette.responses import JSONResponse, StreamingResponse
 
 from electricity import *
@@ -115,18 +113,19 @@ def scheduler_job():
     logging.info("Next run will be at {}.".format(next_run.strftime("%Y-%m-%d %H:%M:%S")))
     scheduler.add_job(scheduler_job, 'date', run_date=next_run)
     try:
-        ei = get_electricity(CUST_ID)
+        ei: ElectricityInfo = get_electricity(CUST_ID)
     except requests.exceptions.ConnectionError:
         logging.error(f"Failed to connect to {BASE_URL}, this task is discarded.")
         return
     except LoginFailedException:
         logging.error(f"Failed to login to {BASE_URL}, this task is discarded.")
         return
-    logging.info(ei.to_dict())
+    # logging.info(ei.to_dict())
     if ei.insert2db():
         logging.info("Data inserted successfully.")
     else:
         logging.info("Same data exists in the database, skipping")
+    ei.close()
 
 
 @app.get("/")
