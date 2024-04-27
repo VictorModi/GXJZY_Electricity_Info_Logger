@@ -225,7 +225,7 @@ def list_dict_to_csv(data: list) -> str:
     fields = set()
     for row in data:
         fields.update(row.keys())
-    fields = sorted(set.union(*[set(row.keys()) for row in data]), key=lambda x: (x != "time", x))
+    fields = sorted(set.union(*[set(row.keys()) for row in data]), key=lambda x: (x != "record_time", x))
     output = io.StringIO()
     writer = csv.DictWriter(output, fieldnames=fields, lineterminator='\n')
     writer.writeheader()
