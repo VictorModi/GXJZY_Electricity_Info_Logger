@@ -49,8 +49,7 @@ class ElectricityInfo(object):
 
     def insert2db(self):
         try:
-            if not get_logs() or ((self.prev_res_amp != Decimal(0) or self.prev_res_amp != Decimal('0.00')) and
-                                  (self.prev_used_amp != Decimal(0) or self.prev_used_amp != Decimal('0.00'))):
+            if not get_logs() or (self.prev_res_amp != Decimal(0) and self.prev_used_amp != Decimal(0)):
                 return self.collection.insert_one(self.to_dict(True))
             return None
         except AttributeError:
