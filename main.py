@@ -230,8 +230,8 @@ def list_dict_to_csv(data: list) -> str:
     writer = csv.DictWriter(output, fieldnames=fields, lineterminator='\n')
     writer.writeheader()
     for row in data:
-        if isinstance(row["time"], datetime):
-            row["time"] = row["time"].strftime("%Y-%m-%d %H:%M:%S")
+        if isinstance(row["record_time"], datetime):
+            row["record_time"] = row["record_time"].strftime("%Y-%m-%d %H:%M:%S")
         writer.writerow(row)
     return output.getvalue()
 
