@@ -52,8 +52,7 @@ class StudentRequest(object):
             'Origin': f'{base_url}',
             'Pragma': 'no-cache',
             'Referer': f'{base_url}/home/login',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
-                          'Chrome/119.0.0.0 Safari/537.36',
+            'User-Agent': user_agent,
             'X-Requested-With': 'XMLHttpRequest'
         }
 
